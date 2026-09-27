@@ -1,0 +1,48 @@
+/*
+ * Device tiers (set on <html> by lib/perf.ts):
+ *  .lite    — weak CPU / low memory / Save-Data: keep the 3D, drop decorative extras.
+ *  .reduced — OS "reduce motion": no looping or large motion at all.
+ */
+
+.lite .hero-orbit,
+.lite .intro-glow {
+  display: none;
+}
+
+.lite .hero-float {
+  animation-duration: 10s;
+}
+
+.lite .layer-badge svg,
+.lite .couple-heart {
+  animation: none;
+}
+
+/* Fewer, smaller shadows = cheaper rasterisation on low-end GPUs. */
+.lite .cf-item,
+.lite .flip-face,
+.lite .layer-img {
+  box-shadow: var(--shadow);
+}
+
+.reduced {
+  scroll-behavior: auto;
+}
+
+.reduced *,
+.reduced *::before,
+.reduced *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
+}
+
+.reduced [data-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+.reduced .cf-item {
+  transform: scale(calc(1 - var(--ad, 0) * 0.08));
+}

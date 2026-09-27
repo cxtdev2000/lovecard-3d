@@ -1,0 +1,250 @@
+:root {
+  --ivory: #fbf5ee;
+  --paper: #fffaf5;
+  --blush: #f6e1dc;
+  --rose: #d98b9b;
+  --rose-deep: #b75a6e;
+  --wine: #6e2a3a;
+  --gold: #c7a05a;
+  --gold-soft: rgba(199, 160, 90, 0.35);
+  --ink: #3d2b2f;
+  --muted: #86706f;
+
+  --f-script: "Dancing Script", "Brush Script MT", cursive;
+  --f-serif: "Playfair Display", Georgia, serif;
+  --f-sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --radius: 22px;
+  --shadow: 0 18px 40px -22px rgba(110, 42, 58, 0.35);
+  --shadow-lg: 0 34px 70px -30px rgba(110, 42, 58, 0.5);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--f-sans);
+  font-weight: 300;
+  font-size: clamp(15px, 1.1vw + 11px, 17px);
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--ivory);
+  overflow-x: hidden;
+}
+
+/* Soft paper glow painted once on a fixed layer (cheaper than background-attachment: fixed). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60vmax 40vmax at 0% 0%, rgba(217, 139, 155, 0.16), transparent 70%),
+    radial-gradient(50vmax 40vmax at 100% 100%, rgba(199, 160, 90, 0.14), transparent 70%);
+}
+
+body.locked {
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  flex: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--rose-deep);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 500;
+}
+
+p {
+  margin: 0;
+}
+
+.script {
+  font-family: var(--f-script);
+  font-weight: 600;
+}
+
+/* ---------- Section scaffolding ---------- */
+
+.section {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(64px, 10vw, 120px) clamp(16px, 4vw, 32px);
+  content-visibility: auto;
+  contain-intrinsic-size: auto 760px;
+}
+
+.sec-head {
+  text-align: center;
+  margin-bottom: clamp(32px, 6vw, 56px);
+}
+
+.sec-head .script {
+  color: var(--rose-deep);
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1.2;
+}
+
+.sec-head h2 {
+  font-family: var(--f-serif);
+  color: var(--wine);
+  font-size: clamp(28px, 5.4vw, 46px);
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+.divider {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--rose);
+  font-size: 16px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  width: 56px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+
+.divider::after {
+  transform: scaleX(-1);
+}
+
+.lead {
+  max-width: 560px;
+  margin: 0 auto 32px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.hint-text {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 0.2s var(--ease-out),
+    background-color 0.2s,
+    color 0.2s;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn svg {
+  font-size: 18px;
+}
+
+.btn-primary {
+  background: var(--wine);
+  color: #fff;
+  box-shadow: 0 10px 24px -12px rgba(110, 42, 58, 0.7);
+}
+
+.btn-ghost {
+  border-color: var(--rose);
+  color: var(--rose-deep);
+  background: transparent;
+}
+
+.btn-soft {
+  background: var(--blush);
+  color: var(--wine);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+@media (hover: hover) {
+  .btn-primary:hover {
+    background: var(--rose-deep);
+  }
+  .btn-ghost:hover,
+  .btn-soft:hover {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: #fff;
+  }
+}
+
+/* ---------- Scroll reveal (transform/opacity only) ---------- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 0.9s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+[data-reveal].in {
+  opacity: 1;
+  transform: none;
+}
