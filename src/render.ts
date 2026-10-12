@@ -1,5 +1,6 @@
 import { themes } from "./config/themes";
 import { wedding as w, type Person, type WeddingEvent } from "./config/wedding";
+import { buildGoogleCalendarUrl } from "./features/calendar";
 import { dateParts, esc, photo } from "./lib/dom";
 import { arches, dial, heart, medallion, rings, sparkle, sprig } from "./lib/ornaments";
 
@@ -7,6 +8,8 @@ import { arches, dial, heart, medallion, rings, sparkle, sprig } from "./lib/orn
 const icon = {
   map: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zm0-9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>`,
   cal: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm-2 8h14v10H5V10z"/></svg>`,
+  apple: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 1.01-2.87-.96.04-2.09.65-2.73 1.4-.56.64-1.04 1.7-1.01 2.74 1.07.08 2.12-.52 2.73-1.27z"/></svg>`,
+  google: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zm-7 5h5v5h-5z"/></svg>`,
   copy: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h11a2 2 0 0 1 2 2v11h-2V5H8V3zM4 7h11a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zm0 2v11h11V9H4z"/></svg>`,
   music: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18.5a3.5 3.5 0 1 1-2-3.2V5l12-2v12.5a3.5 3.5 0 1 1-2-3.2V7.4l-8 1.3v9.8z"/></svg>`,
   prev: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg>`,
@@ -186,7 +189,8 @@ function story() {
 
 function eventCard(e: WeddingEvent, i: number) {
   const d = dateParts(e.start);
-  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${e.place}, ${e.address}`)}`;
+  const mapUrl = e.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${e.place}, ${e.address}`)}`;
+  const googleCalUrl = buildGoogleCalendarUrl(e);
   return `
   <article class="event-card" data-reveal style="--i:${i}">
     <h3>${esc(e.title)}</h3>
@@ -194,8 +198,15 @@ function eventCard(e: WeddingEvent, i: number) {
     <p class="event-date">${esc(d.weekday)}, ${d.day}/${d.month}/${d.year}</p>
     <p class="event-place"><strong>${esc(e.place)}</strong>${esc(e.address)}</p>
     <div class="event-actions">
-      <a class="btn btn-ghost" href="${mapUrl}" target="_blank" rel="noopener">${icon.map}Chỉ đường</a>
-      <button class="btn btn-ghost" type="button" data-ics="${i}">${icon.cal}Lưu lịch</button>
+      <a class="btn btn-ghost btn-map" href="${mapUrl}" target="_blank" rel="noopener">${icon.map}Chỉ đường</a>
+      <div class="cal-actions">
+        <button class="btn btn-ghost btn-cal" type="button" data-ics="${i}" aria-label="Thêm vào Apple Calendar (iPhone / iOS)">
+          ${icon.apple}Apple (iOS)
+        </button>
+        <a class="btn btn-ghost btn-cal" href="${googleCalUrl}" target="_blank" rel="noopener" aria-label="Thêm vào Google Calendar (Android)">
+          ${icon.google}Google (Android)
+        </a>
+      </div>
     </div>
   </article>`;
 }

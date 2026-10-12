@@ -391,9 +391,38 @@
 .event-actions {
   position: relative;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.event-actions .btn-map {
+  width: 100%;
+  max-width: 220px;
+}
+
+.cal-actions {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 6px;
+  width: 100%;
+}
+
+.cal-actions .btn-cal {
+  flex: 1 1 120px;
+  min-height: 38px;
+  padding: 6px 12px;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.cal-actions .btn-cal svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 @media (hover: hover) {
