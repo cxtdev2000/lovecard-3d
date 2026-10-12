@@ -3,6 +3,9 @@ import { wedding, type WeddingEvent } from "../config/wedding";
 const stamp = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const icsText = (s: string) => s.replace(/\\/g, "\\\\").replace(/[,;]/g, (m) => `\\${m}`).replace(/\n/g, "\\n");
 
+/** Apple devices (iPhone, iPad, Mac) open an .ics straight into Calendar; others are better served by Google Calendar. */
+export const prefersIcs = () => /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+
 /** Builds Google Calendar URL for Android and desktop web browsers. */
 export function buildGoogleCalendarUrl(e: WeddingEvent): string {
   const start = new Date(e.start);

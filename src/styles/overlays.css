@@ -102,6 +102,27 @@
   display: none;
 }
 
+/* Phones: smaller, tighter corner buttons so they cover less of the card (still a 44px target). */
+@media (max-width: 599px) {
+  .music-btn,
+  .theme-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 19px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  .music-btn {
+    right: calc(12px + env(safe-area-inset-right));
+  }
+  .theme-btn,
+  .theme-panel {
+    left: calc(12px + env(safe-area-inset-left));
+  }
+  .theme-panel {
+    bottom: calc(66px + env(safe-area-inset-bottom));
+  }
+}
+
 .theme-title {
   padding: 2px 8px 6px;
   font-family: var(--f-serif);

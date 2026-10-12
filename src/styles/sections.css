@@ -183,41 +183,14 @@
 
 /* ================= Story timeline ================= */
 
+/* The spine is the love thread itself (features/love-thread.ts), routed through the .tl-dot hearts. */
+
 .timeline {
   position: relative;
   max-width: 920px;
   margin: 0 auto;
   padding: 0;
   list-style: none;
-}
-
-.timeline::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 20px;
-  width: 1px;
-  background: linear-gradient(transparent, var(--gold), transparent);
-  /* --p is the scroll progress set by features/timeline-draw.ts. */
-  transform: scaleY(var(--p, 1));
-  transform-origin: 50% 0;
-}
-
-/* Glowing tip riding the end of the drawn line. */
-.timeline::after {
-  content: "";
-  position: absolute;
-  top: calc(var(--p, 1) * 100%);
-  left: 16px;
-  width: 9px;
-  height: 9px;
-  margin-top: -4px;
-  border-radius: 50%;
-  background: var(--gold);
-  box-shadow:
-    0 0 0 4px rgba(var(--gold-rgb), 0.18),
-    0 0 14px 2px rgba(var(--gold-light-rgb), 0.9);
 }
 
 .tl-item {
@@ -289,12 +262,6 @@
 }
 
 @media (min-width: 780px) {
-  .timeline::before {
-    left: 50%;
-  }
-  .timeline::after {
-    left: calc(50% - 4px);
-  }
   .tl-item {
     width: 50%;
     padding: 0 48px 0 0;
@@ -391,38 +358,17 @@
 .event-actions {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
   width: 100%;
   margin-top: 6px;
 }
 
-.event-actions .btn-map {
-  width: 100%;
-  max-width: 220px;
-}
-
-.cal-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-}
-
-.cal-actions .btn-cal {
-  flex: 1 1 120px;
-  min-height: 38px;
-  padding: 6px 12px;
-  font-size: 13px;
-  gap: 6px;
-}
-
-.cal-actions .btn-cal svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
+.event-actions .btn {
+  flex: 1 1 128px;
+  max-width: 200px;
+  padding: 10px 14px;
 }
 
 @media (hover: hover) {

@@ -52,7 +52,6 @@
 
 .reduced .twinkles,
 .reduced .thread-tip,
-.reduced .timeline::after,
 .reduced .layer-img::after {
   display: none;
 }

@@ -1,11 +1,14 @@
-import { $ } from "../lib/dom";
+import { $, $$ } from "../lib/dom";
 import { getTier } from "../lib/perf";
 import { sparkleBurst } from "./sparkle-burst";
 
-/** Fills the guest name from `?to=` (e.g. ?to=Anh%20Minh) so each link can be personalised. */
+/**
+ * Fills the guest name from `?to=` (e.g. ?to=Anh%20Minh) so each link can be personalised:
+ * on the envelope and on the invitation's guest line (`[data-guest]`).
+ */
 function personalise() {
   const to = new URLSearchParams(location.search).get("to")?.trim();
-  if (to) $("#guest-name").textContent = to.slice(0, 60);
+  if (to) for (const el of [$("#guest-name"), ...$$("[data-guest]")]) el.textContent = to.slice(0, 60);
 }
 
 /** Opening sequence: flap swings open in 3D → letter rises → the whole intro dissolves into the card. */

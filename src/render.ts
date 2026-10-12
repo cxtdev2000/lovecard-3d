@@ -1,7 +1,8 @@
 import { themes } from "./config/themes";
 import { wedding as w, type Person, type WeddingEvent } from "./config/wedding";
-import { buildGoogleCalendarUrl } from "./features/calendar";
+import { buildGoogleCalendarUrl, prefersIcs } from "./features/calendar";
 import { dateParts, esc, photo } from "./lib/dom";
+import { getTier } from "./lib/perf";
 import { arches, dial, heart, medallion, rings, sparkle, sprig } from "./lib/ornaments";
 
 
@@ -70,9 +71,120 @@ function intro() {
   </div>`;
 }
 
-function hero() {
+/** The original hero picture: layered arch photo with a rotating seal (lite/reduced tiers). */
+function photoStage() {
   return `
-  <section class="hero" id="top">
+      <div class="hero-stage" data-tilt="9">
+        <div class="hero-float"><div class="hero-photo">
+          <span class="layer layer-back" aria-hidden="true"></span>
+          <span class="layer layer-mid" aria-hidden="true"></span>
+          <div class="layer layer-img">${photo(w.heroPhoto, `${w.groom.name} và ${w.bride.name}`, { eager: true, sizes: "(max-width: 900px) 78vw, 420px" })}</div>
+          <span class="layer layer-badge" aria-hidden="true">${heart}</span>
+          <span class="layer layer-seal" aria-hidden="true">
+            <svg viewBox="0 0 120 120"><path id="seal-ring" fill="none" d="M14 60a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/>
+              <text><textPath href="#seal-ring" textLength="286" lengthAdjust="spacing">SAVE THE DATE · ${main.day}.${main.month}.${main.year} ·</textPath></text></svg>
+            <b>${esc(w.initials)}</b>
+          </span>
+        </div></div>
+        ${heroTwinkles}
+      </div>`;
+}
+
+const heroTwinkles = twinkles([[-6, 12, 16, 0], [104, 22, 12, 1.1], [96, 70, 18, 0.5], [-10, 64, 11, 1.7], [50, -6, 13, 2.2], [8, 98, 14, 0.9]]);
+
+/** Month grid for the invitation, Monday first, with the wedding day ringed by a heart. */
+function monthGrid() {
+  const [y, m, d] = [Number(main.year), Number(main.month), Number(main.day)];
+  const lead = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
+  const days = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const cells = [
+    ...["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((n) => `<b>${n}</b>`),
+    ...Array<string>(lead).fill("<i></i>"),
+    ...Array.from({ length: days }, (_, i) => (i + 1 === d ? `<i class="on">${heart}<span>${d}</span></i>` : `<i>${i + 1}</i>`)),
+  ];
+  return `<div class="fold-month"><p>Tháng ${m} · ${y}</p><div class="fold-days">${cells.join("")}</div></div>`;
+}
+
+/**
+ * The printed invitation as a 3D letter fold (full tier only). Three 5:7 panels on one sheet:
+ * A (left) is die-cut with an arch window and folds over last, so its outside is the cover and
+ * the window frames the photo printed on the back of C, which folds in first. Inside, A doubles
+ * as a photo-booth frame for guests, B announces the wedding and C invites the guest.
+ * features/fold-card.ts unfolds it as the guest scrolls.
+ */
+function foldStage() {
+  const party = w.events.find((e) => e.start === w.date) ?? w.events[w.events.length - 1];
+  const when = dateParts(party.start);
+  const families = [w.groom, w.bride].some((p) => p.parents.length)
+    ? `<div class="fold-families">${([["Nhà trai", w.groom], ["Nhà gái", w.bride]] as const)
+        .map(([side, p]) => `<p><small>${side}</small>${p.parents.map(esc).join("<br>")}</p>`)
+        .join("")}</div>`
+    : "";
+  const shade = `<i class="fold-shade"></i>`;
+  return `
+      <div class="hero-stage" role="img" aria-label="${esc(`Thiệp cưới ${w.groom.name} và ${w.bride.name}, ${main.day}.${main.month}.${main.year}`)}">
+        <div class="hero-float"><div class="fold-move">
+          ${heroTwinkles}
+          <div class="fold-sway"><div class="fold-card" aria-hidden="true">
+            <div class="fold-panel fold-b">
+              <div class="face fold-main">
+                ${families}
+                <span class="fold-mono">${esc(w.initials)}</span>
+                <p class="script">Trân trọng báo tin</p>
+                <p class="fold-caps">Lễ thành hôn của</p>
+                <p class="fold-person"><small>${esc(w.groom.role)}</small>${esc(w.groom.fullName)}</p>
+                <p class="fold-amp script">&amp;</p>
+                <p class="fold-person"><small>${esc(w.bride.role)}</small>${esc(w.bride.fullName)}</p>
+                <div class="fold-date"><span>${esc(main.weekday)}</span><b>${main.day}</b><span>Tháng ${main.month}</span><em>${main.year}</em></div>
+                <p class="fold-lunar">${esc(w.lunarDate)}</p>
+              </div>
+            </div>
+            <div class="fold-panel fold-c">
+              <div class="face fold-details">
+                <p class="script">Trân trọng kính mời</p>
+                <p class="fold-guest" data-guest>Quý khách</p>
+                <p class="fold-small">tới dự bữa tiệc chung vui cùng gia đình chúng tôi</p>
+                <p class="fold-caps">${esc(party.title)}</p>
+                <p class="fold-time">${when.time}</p>
+                <p class="fold-small">${esc(when.weekday)} · ${when.day}.${when.month}.${when.year}</p>
+                <p class="fold-venue">${esc(party.place)}<small>${esc(party.address)}</small></p>
+                ${monthGrid()}
+                <p class="fold-small fold-thanks">Sự hiện diện của quý khách là niềm vinh hạnh cho gia đình chúng tôi</p>
+                ${shade}
+              </div>
+              <div class="face face-back fold-photo">
+                ${photo(w.heroPhoto, "", { eager: true, sizes: "(max-width: 900px) 80vw, 400px" })}
+                <p class="fold-quote">“${esc(w.quote)}”</p>
+                ${shade}
+              </div>
+            </div>
+            <div class="fold-panel fold-a">
+              <div class="face fold-frame fold-booth">
+                <span class="fold-window"></span>
+                <span class="fold-finder"></span>
+                <p class="fold-caps"><i></i>Photo booth</p>
+                <p class="script">Cùng chụp một tấm nhé!</p>
+                <p class="fold-small">Giơ khung lên &amp; lưu lại khoảnh khắc ngày vui</p>
+                ${shade}
+              </div>
+              <div class="face face-back fold-frame fold-cover">
+                <span class="fold-window"></span>
+                <p class="fold-caps">Save the date</p>
+                <p class="script">${esc(w.groom.name)} <span>&amp;</span> ${esc(w.bride.name)}</p>
+                <p class="fold-cover-date">${main.day} · ${main.month} · ${main.year}</p>
+                <span class="fold-sprig tl">${sprig}</span><span class="fold-sprig tr">${sprig}</span>
+                ${shade}
+              </div>
+            </div>
+          </div></div>
+        </div></div>
+      </div>`;
+}
+
+function hero() {
+  // Capable devices get the 3D folded invitation, pinned while it opens; the rest keep the photo.
+  const fold = getTier() === "full";
+  const scene = `
     <div class="hero-rays" aria-hidden="true"></div>
     <div class="hero-orbit" aria-hidden="true"><i></i><i></i></div>
     ${ornament("orn-tr")}${ornament("orn-bl")}
@@ -87,24 +199,13 @@ function hero() {
         <p class="hero-date"><span>${esc(main.weekday)}</span><strong>${main.day}.${main.month}.${main.year}</strong></p>
         <p class="lunar">${esc(w.lunarDate)}</p>
       </div>
-      <div class="hero-stage" data-tilt="9">
-        <div class="hero-float"><div class="hero-photo">
-          <span class="layer layer-back" aria-hidden="true"></span>
-          <span class="layer layer-mid" aria-hidden="true"></span>
-          <div class="layer layer-img">${photo(w.heroPhoto, `${w.groom.name} và ${w.bride.name}`, { eager: true, sizes: "(max-width: 900px) 78vw, 420px" })}</div>
-          <span class="layer layer-badge" aria-hidden="true">${heart}</span>
-          <span class="layer layer-seal" aria-hidden="true">
-            <svg viewBox="0 0 120 120"><path id="seal-ring" fill="none" d="M14 60a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/>
-              <text><textPath href="#seal-ring" textLength="286" lengthAdjust="spacing">SAVE THE DATE · ${main.day}.${main.month}.${main.year} ·</textPath></text></svg>
-            <b>${esc(w.initials)}</b>
-          </span>
-        </div></div>
-        ${twinkles([[-6, 12, 16, 0], [104, 22, 12, 1.1], [96, 70, 18, 0.5], [-10, 64, 11, 1.7], [50, -6, 13, 2.2], [8, 98, 14, 0.9]])}
-      </div>
+      ${fold ? foldStage() : photoStage()}
     </div>
-    <p class="hero-quote" data-reveal>“${esc(w.quote)}”</p>
-    <a class="scroll-cue" href="#countdown" aria-label="Cuộn xuống"><span></span></a>
-  </section>`;
+    ${fold ? "" : `<p class="hero-quote" data-reveal>“${esc(w.quote)}”</p>`}
+    <a class="scroll-cue" href="#countdown" aria-label="Cuộn xuống"><span></span></a>`;
+  return fold
+    ? `<section class="hero hero-fold" id="top"><div class="fold-pin">${scene}</div></section>`
+    : `<section class="hero" id="top">${scene}</section>`;
 }
 
 /** Two crossing bands of scrolling text between the hero and the rest of the card. */
@@ -134,7 +235,7 @@ function personCard(p: Person, side: "groom" | "bride") {
     ? `<p class="parents">${p.parents.map(esc).join("<br>")}</p>`
     : "";
   return `
-  <button class="flip-card ${side}" type="button" data-flip data-reveal aria-pressed="false"
+  <button class="flip-card ${side}" type="button" data-flip data-thread-stop data-reveal aria-pressed="false"
     aria-label="${esc(`${p.role} ${p.fullName} — chạm để lật thẻ`)}">
     <span class="flip-inner">
       <span class="flip-face flip-front">
@@ -174,7 +275,7 @@ function story() {
       ${w.story
         .map(
           (s, i) => `
-        <li class="tl-item" data-reveal style="--i:${i}">
+        <li class="tl-item" data-reveal data-thread-stop=".tl-dot" style="--i:${i}">
           <span class="tl-dot" aria-hidden="true">${heart}</span>
           <div class="tl-card">
             <div class="tl-photo">${photo(s.photo, s.title, { sizes: "(max-width: 640px) 80vw, 320px" })}</div>
@@ -190,23 +291,19 @@ function story() {
 function eventCard(e: WeddingEvent, i: number) {
   const d = dateParts(e.start);
   const mapUrl = e.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${e.place}, ${e.address}`)}`;
-  const googleCalUrl = buildGoogleCalendarUrl(e);
+  // One button, wired per device: Apple devices import an .ics into Calendar, everyone else gets Google Calendar.
+  const calBtn = prefersIcs()
+    ? `<button class="btn btn-ghost" type="button" data-ics="${i}" aria-label="Thêm ${esc(e.title)} vào lịch (Apple Calendar)">${icon.apple}Thêm vào lịch</button>`
+    : `<a class="btn btn-ghost" href="${buildGoogleCalendarUrl(e)}" target="_blank" rel="noopener" aria-label="Thêm ${esc(e.title)} vào lịch (Google Calendar)">${icon.google}Thêm vào lịch</a>`;
   return `
-  <article class="event-card" data-reveal style="--i:${i}">
+  <article class="event-card" data-reveal data-thread-stop style="--i:${i}">
     <h3>${esc(e.title)}</h3>
     <p class="event-time">${d.time}</p>
     <p class="event-date">${esc(d.weekday)}, ${d.day}/${d.month}/${d.year}</p>
     <p class="event-place"><strong>${esc(e.place)}</strong>${esc(e.address)}</p>
     <div class="event-actions">
-      <a class="btn btn-ghost btn-map" href="${mapUrl}" target="_blank" rel="noopener">${icon.map}Chỉ đường</a>
-      <div class="cal-actions">
-        <button class="btn btn-ghost btn-cal" type="button" data-ics="${i}" aria-label="Thêm vào Apple Calendar (iPhone / iOS)">
-          ${icon.apple}Apple (iOS)
-        </button>
-        <a class="btn btn-ghost btn-cal" href="${googleCalUrl}" target="_blank" rel="noopener" aria-label="Thêm vào Google Calendar (Android)">
-          ${icon.google}Google (Android)
-        </a>
-      </div>
+      <a class="btn btn-ghost" href="${mapUrl}" target="_blank" rel="noopener">${icon.map}Chỉ đường</a>
+      ${calBtn}
     </div>
   </article>`;
 }

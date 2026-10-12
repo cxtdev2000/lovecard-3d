@@ -363,6 +363,7 @@
   background: #fff;
   font-size: 14px;
   text-align: center;
+  text-wrap: balance;
   cursor: pointer;
   transition:
     background-color 0.2s,
@@ -390,6 +391,16 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+/* Phones: the airmail border already frames the form, so trim the inner padding for wider fields. */
+@media (max-width: 480px) {
+  .rsvp-form {
+    padding: 20px 16px;
+  }
+  .choice span {
+    padding: 8px 6px;
+  }
 }
 
 @media (max-width: 360px) {
