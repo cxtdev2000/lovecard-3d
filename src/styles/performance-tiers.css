@@ -5,8 +5,6 @@
  */
 
 .lite .hero-orbit,
-.lite .intro-glow,
-.lite .bokeh,
 .lite .layer-img::after {
   display: none;
 }
@@ -16,7 +14,15 @@
 }
 
 .lite .layer-badge svg,
+.lite .layer-seal svg,
+.lite .medallion svg,
 .lite .couple-heart {
+  animation: none;
+}
+
+.lite .hero-rays,
+.lite .watermark span,
+.lite .dial-hand {
   animation: none;
 }
 
@@ -44,8 +50,8 @@
   transition-delay: 0s !important;
 }
 
-.reduced .bokeh,
 .reduced .twinkles,
+.reduced .thread-tip,
 .reduced .timeline::after,
 .reduced .layer-img::after {
   display: none;

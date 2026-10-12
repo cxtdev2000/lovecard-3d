@@ -34,6 +34,46 @@ export const rings = `
   <path d="M80 8V2M92 12l4-4M68 12l-4-4"/>
 </svg>`;
 
+const lace = (k: number) =>
+  `<path d="M100 62Q114 38 100 14Q86 38 100 62z" transform="rotate(${k * 30} 100 100)"/>` +
+  `<path d="M100 22l4 7-4 7-4-7z" transform="rotate(${k * 30 + 15} 100 100)"/>`;
+
+/** Lace rosette: two rings, twelve petals and diamonds between them. */
+export const medallion = `
+<svg class="medallion-art" viewBox="0 0 200 200" aria-hidden="true" fill="none" stroke="currentColor" stroke-width=".6" stroke-linejoin="round">
+  <path d="M3 100a97 97 0 1 0 194 0a97 97 0 1 0-194 0"/>
+  <path d="M8 100a92 92 0 1 0 184 0a92 92 0 1 0-184 0"/>
+  ${Array.from({ length: 12 }, (_, k) => lace(k)).join("")}
+  <path d="M66 100a34 34 0 1 0 68 0a34 34 0 1 0-68 0"/>
+</svg>`;
+
+const tick = (i: number) => {
+  const a = (i * Math.PI) / 30;
+  const [r1, r2] = i % 5 ? [86, 92] : [78, 92];
+  const pt = (r: number) => `${(100 + r * Math.sin(a)).toFixed(1)} ${(100 - r * Math.cos(a)).toFixed(1)}`;
+  return `M${pt(r1)}L${pt(r2)}`;
+};
+
+/**
+ * Clock dial behind the countdown. The second hand sweeps once a minute, started at the
+ * current second so it lines up with the ticking digits.
+ */
+export const dial = (second: number) => `
+<svg viewBox="0 0 200 200" aria-hidden="true" fill="none" stroke="currentColor" stroke-linecap="round">
+  <path stroke-width=".6" d="M2 100a98 98 0 1 0 196 0a98 98 0 1 0-196 0M30 100a70 70 0 1 0 140 0a70 70 0 1 0-140 0"/>
+  <path stroke-width="1" d="${Array.from({ length: 60 }, (_, i) => tick(i)).join("")}"/>
+  <path class="dial-hand" stroke-width="1.2" d="M100 112V16M97 100a3 3 0 1 0 6 0a3 3 0 1 0-6 0" style="animation-delay:-${second}s"/>
+</svg>`;
+
+/** Three nested arches, echoing the hero photo frame, behind the event cards. */
+export const arches = `
+<svg viewBox="0 0 300 300" aria-hidden="true" fill="none" stroke="currentColor" stroke-width=".8">
+  <path d="M20 300V150a130 130 0 0 1 260 0V300"/>
+  <path d="M44 300V150a106 106 0 0 1 212 0V300"/>
+  <path d="M68 300V150a82 82 0 0 1 164 0V300"/>
+  <path d="M150 20V4M150 4l-4 6M150 4l4 6"/>
+</svg>`;
+
 /** Four-point star used for twinkles and the envelope burst (filled). */
 export const sparkle = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0Z"/></svg>`;
 

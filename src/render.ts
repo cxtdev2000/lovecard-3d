@@ -1,7 +1,7 @@
 import { themes } from "./config/themes";
 import { wedding as w, type Person, type WeddingEvent } from "./config/wedding";
 import { dateParts, esc, photo } from "./lib/dom";
-import { heart, rings, sparkle, sprig } from "./lib/ornaments";
+import { arches, dial, heart, medallion, rings, sparkle, sprig } from "./lib/ornaments";
 
 
 const icon = {
@@ -23,10 +23,20 @@ const twinkles = (spots: [number, number, number, number][]) => `
 
 const ornament = (cls: string) => `<span class="orn ${cls}" data-draw aria-hidden="true">${sprig}</span>`;
 
+/** Wraps each letter for the staggered heading reveal; words stay unbreakable. */
+function splitLetters(text: string) {
+  let n = 0;
+  return text
+    .normalize("NFC")
+    .split(" ")
+    .map((word) => `<span class="word">${Array.from(word, (ch) => `<span class="ch" style="--c:${n++}">${esc(ch)}</span>`).join("")}</span>`)
+    .join(" ");
+}
+
 const secHead = (eyebrow: string, title: string) => `
   <header class="sec-head" data-reveal>
     <p class="script">${esc(eyebrow)}</p>
-    <h2>${esc(title)}</h2>
+    <h2 aria-label="${esc(title)}"><span aria-hidden="true">${splitLetters(title)}</span></h2>
     <span class="divider" aria-hidden="true">${heart}</span>
   </header>`;
 
@@ -35,7 +45,7 @@ const main = dateParts(w.date);
 function intro() {
   return `
   <div class="intro" id="intro">
-    <div class="intro-glow" aria-hidden="true"></div>
+    <span class="medallion" data-draw aria-hidden="true">${medallion}</span>
     ${ornament("orn-tl")}${ornament("orn-br")}
     <div class="intro-inner">
       <p class="intro-guest">Trân trọng kính mời<strong id="guest-name">Quý khách</strong></p>
@@ -60,6 +70,7 @@ function intro() {
 function hero() {
   return `
   <section class="hero" id="top">
+    <div class="hero-rays" aria-hidden="true"></div>
     <div class="hero-orbit" aria-hidden="true"><i></i><i></i></div>
     ${ornament("orn-tr")}${ornament("orn-bl")}
     <div class="hero-grid">
@@ -79,6 +90,11 @@ function hero() {
           <span class="layer layer-mid" aria-hidden="true"></span>
           <div class="layer layer-img">${photo(w.heroPhoto, `${w.groom.name} và ${w.bride.name}`, { eager: true, sizes: "(max-width: 900px) 78vw, 420px" })}</div>
           <span class="layer layer-badge" aria-hidden="true">${heart}</span>
+          <span class="layer layer-seal" aria-hidden="true">
+            <svg viewBox="0 0 120 120"><path id="seal-ring" fill="none" d="M14 60a46 46 0 1 1 92 0a46 46 0 1 1-92 0"/>
+              <text><textPath href="#seal-ring" textLength="286" lengthAdjust="spacing">SAVE THE DATE · ${main.day}.${main.month}.${main.year} ·</textPath></text></svg>
+            <b>${esc(w.initials)}</b>
+          </span>
         </div></div>
         ${twinkles([[-6, 12, 16, 0], [104, 22, 12, 1.1], [96, 70, 18, 0.5], [-10, 64, 11, 1.7], [50, -6, 13, 2.2], [8, 98, 14, 0.9]])}
       </div>
@@ -88,11 +104,20 @@ function hero() {
   </section>`;
 }
 
+/** Two crossing bands of scrolling text between the hero and the rest of the card. */
+function ribbons() {
+  const phrase = `<span>${esc(w.groom.name)}</span>${heart}<span>${esc(w.bride.name)}</span>${sparkle}<span>${main.day}.${main.month}.${main.year}</span>${sparkle}<span class="script">Save the date</span>${sparkle}`;
+  // Two identical halves so translating by -50% loops seamlessly.
+  const band = (cls: string) => `<div class="ribbon ${cls}"><div class="ribbon-track">${phrase.repeat(10)}</div></div>`;
+  return `<div class="ribbons" aria-hidden="true">${band("ribbon-a")}${band("ribbon-b")}</div>`;
+}
+
 function countdown() {
   const unit = (key: string, label: string) =>
     `<div class="cd-unit"><span class="cd-num" data-cd="${key}">00</span><span class="cd-label">${label}</span></div>`;
   return `
   <section class="section countdown" id="countdown">
+    <span class="cd-dial" aria-hidden="true">${dial(new Date().getSeconds())}</span>
     ${secHead("Đếm ngược", "Đến ngày chung đôi")}
     <div class="cd-grid" data-reveal>
       ${unit("d", "Ngày")}${unit("h", "Giờ")}${unit("m", "Phút")}${unit("s", "Giây")}
@@ -127,6 +152,7 @@ function personCard(p: Person, side: "groom" | "bride") {
 function couple() {
   return `
   <section class="section couple" id="couple">
+    <p class="watermark" aria-hidden="true"><span>${"Love · Forever · ".repeat(6)}</span></p>
     ${secHead("Cô dâu & Chú rể", "Hai nửa yêu thương")}
     <div class="couple-grid">
       ${personCard(w.groom, "groom")}
@@ -177,6 +203,7 @@ function eventCard(e: WeddingEvent, i: number) {
 function events() {
   return `
   <section class="section events" id="events">
+    <span class="arches" data-draw data-reveal aria-hidden="true">${arches}</span>
     ${secHead("Sự kiện", "Lễ cưới")}
     <div class="event-grid">${w.events.map(eventCard).join("")}</div>
   </section>`;
@@ -240,6 +267,7 @@ function rsvp() {
   <section class="section rsvp" id="rsvp">
     ${secHead("Xác nhận tham dự", "Bạn sẽ đến chứ?")}
     <form class="rsvp-form" id="rsvp-form" data-reveal novalidate>
+      <span class="stamp" aria-hidden="true">${heart}<small>${main.day}.${main.month}</small></span>
       <label class="field"><span>Tên của bạn</span>
         <input name="name" autocomplete="name" required maxlength="60" placeholder="Nguyễn Văn A">
       </label>
@@ -295,7 +323,13 @@ function themePicker() {
 
 function overlays() {
   return `
-  <div class="bokeh" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <svg class="paper-motif" aria-hidden="true">
+    <defs><pattern id="motif" width="88" height="88" patternUnits="userSpaceOnUse">
+      <path d="M22 15q1 6 7 7q-6 1-7 7q-1-6-7-7q6-1 7-7z"/>
+      <path d="M66 70c-3.5-2.4-6-4.6-6-7.2 0-1.8 1.3-3 2.9-3 1.3 0 2.4.8 3.1 1.9.7-1.1 1.8-1.9 3.1-1.9 1.6 0 2.9 1.2 2.9 3 0 2.6-2.5 4.8-6 7.2z"/>
+    </pattern></defs>
+    <rect width="100%" height="100%" fill="url(#motif)"/>
+  </svg>
   <canvas class="petals" id="petals" aria-hidden="true"></canvas>
   <button class="music-btn" id="music-btn" type="button" aria-label="Bật/tắt nhạc" aria-pressed="false" hidden>${icon.music}</button>
   <audio id="music" src="${encodeURI(w.music)}" preload="none" loop></audio>
@@ -313,7 +347,7 @@ export function render(root: HTMLElement) {
   root.innerHTML = `
     ${intro()}
     <main class="card" id="card" inert>
-      ${hero()}${countdown()}${couple()}${story()}${events()}${gallery()}${gift()}${rsvp()}${footer()}
+      ${hero()}${ribbons()}${countdown()}${couple()}${story()}${events()}${gallery()}${gift()}${rsvp()}${footer()}
     </main>
     ${overlays()}`;
 }

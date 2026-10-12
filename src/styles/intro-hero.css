@@ -13,15 +13,6 @@
     visibility 0.9s;
 }
 
-.intro-glow {
-  position: absolute;
-  width: min(120vw, 900px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.9), transparent 62%);
-  animation: glow 5s ease-in-out infinite;
-}
-
 .intro-inner {
   position: relative;
   display: grid;
@@ -219,12 +210,6 @@
 @keyframes hint {
   50% {
     opacity: 0.35;
-  }
-}
-@keyframes glow {
-  50% {
-    transform: scale(1.12);
-    opacity: 0.7;
   }
 }
 
