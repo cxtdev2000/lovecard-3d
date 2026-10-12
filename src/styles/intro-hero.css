@@ -7,7 +7,7 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: radial-gradient(120% 90% at 50% 35%, #fff8f2 0%, #f6e1dc 55%, #ecc9c3 100%);
+  background: radial-gradient(120% 90% at 50% 35%, var(--paper) 0%, var(--blush) 55%, var(--tint-30) 100%);
   transition:
     opacity 0.9s ease,
     visibility 0.9s;
@@ -74,7 +74,7 @@
 
 .env-back {
   inset: 0;
-  background: linear-gradient(160deg, #e2aeab, #cf8f92);
+  background: linear-gradient(160deg, var(--tint-50), var(--tint-80));
   box-shadow: var(--shadow-lg);
 }
 
@@ -124,7 +124,7 @@
 .env-pocket {
   inset: 0;
   z-index: 3;
-  background: linear-gradient(165deg, #f1cbc7, #dea3a4);
+  background: linear-gradient(165deg, var(--tint-20), var(--tint-60));
   clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
 }
 
@@ -132,7 +132,7 @@
   top: 0;
   height: 60%;
   z-index: 4;
-  background: linear-gradient(180deg, #ebbcb8, #d9999b);
+  background: linear-gradient(180deg, var(--tint-40), var(--tint-70));
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: 50% 0;
   transform: perspective(900px) rotateX(0deg);
@@ -153,11 +153,11 @@
   aspect-ratio: 1;
   margin: calc(clamp(56px, 16vw, 72px) / -2) 0 0 calc(clamp(56px, 16vw, 72px) / -2);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #a3445a, #6e2a3a 70%);
+  background: radial-gradient(circle at 35% 30%, var(--wine-light), var(--wine) 70%);
   box-shadow:
-    0 6px 14px -4px rgba(110, 42, 58, 0.6),
+    0 6px 14px -4px rgba(var(--wine-rgb), 0.6),
     inset 0 0 0 4px rgba(255, 255, 255, 0.08);
-  color: #f3dcb0;
+  color: var(--gold-light);
   font-family: var(--f-serif);
   font-size: clamp(13px, 3.6vw, 16px);
   font-style: italic;
@@ -284,7 +284,7 @@
 }
 
 .layer-back {
-  background: linear-gradient(160deg, var(--blush), #eab9b5);
+  background: linear-gradient(160deg, var(--blush), var(--tint-40));
   transform: translate3d(16px, 18px, -70px);
 }
 
@@ -407,7 +407,7 @@
 
 .hero-orbit i:nth-child(2) {
   inset: 14%;
-  border: 1px solid rgba(217, 139, 155, 0.25);
+  border: 1px solid rgba(var(--rose-rgb), 0.25);
   animation-duration: 42s;
   animation-direction: reverse;
 }

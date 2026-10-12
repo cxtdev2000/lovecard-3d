@@ -1,3 +1,4 @@
+import { themes } from "./config/themes";
 import { wedding as w, type Person, type WeddingEvent } from "./config/wedding";
 import { dateParts, esc, photo } from "./lib/dom";
 
@@ -10,6 +11,7 @@ const icon = {
   music: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18.5a3.5 3.5 0 1 1-2-3.2V5l12-2v12.5a3.5 3.5 0 1 1-2-3.2V7.4l-8 1.3v9.8z"/></svg>`,
   prev: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 5.4 14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg>`,
   next: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 5.4 10 4l8 8-8 8-1.4-1.4 6.6-6.6z"/></svg>`,
+  palette: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4A5.6 5.6 0 0 0 23 9.8C23 5.5 18.1 2 12 2zM6.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>`,
   close: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>`,
 };
 
@@ -262,6 +264,23 @@ function footer() {
   </footer>`;
 }
 
+function themePicker() {
+  if (!w.themePicker) return "";
+  const options = Object.entries(themes)
+    .map(
+      ([id, t]) => `
+      <button class="theme-opt" type="button" data-theme-id="${id}" aria-pressed="false">
+        <span class="theme-swatch" aria-hidden="true" style="--a:${t.colors.wine};--b:${t.colors.rose};--c:${t.colors.paper}"></span>${esc(t.label)}
+      </button>`,
+    )
+    .join("");
+  return `
+  <button class="theme-btn" id="theme-btn" type="button" aria-label="Đổi màu thiệp" aria-expanded="false" aria-controls="theme-panel">${icon.palette}</button>
+  <div class="theme-panel" id="theme-panel" role="group" aria-label="Chọn tông màu" hidden>
+    <p class="theme-title">Tông màu</p>${options}
+  </div>`;
+}
+
 function overlays() {
   return `
   <canvas class="petals" id="petals" aria-hidden="true"></canvas>
@@ -273,6 +292,7 @@ function overlays() {
     <button class="lb-btn lb-prev" type="button" data-lb="-1" aria-label="Ảnh trước">${icon.prev}</button>
     <button class="lb-btn lb-next" type="button" data-lb="1" aria-label="Ảnh sau">${icon.next}</button>
   </dialog>
+  ${themePicker()}
   <div class="toast" id="toast" role="status" aria-live="polite"></div>`;
 }
 

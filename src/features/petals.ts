@@ -1,16 +1,15 @@
 import { $ } from "../lib/dom";
 import { downgrade, getTier, onTierChange } from "../lib/perf";
+import { getTheme, onThemeChange } from "./theme";
 
 type Petal = {
   x: number; y: number; size: number; vy: number; vx: number;
   sway: number; swaySpeed: number; rot: number; vr: number; flip: number; vf: number; sprite: number;
 };
 
-const COLORS = ["#f4b6c2", "#f8d3da", "#e89aab", "#fbe4d0"];
-
 /** Pre-renders each petal colour once so every frame is just cheap drawImage calls. */
-function makeSprites(): HTMLCanvasElement[] {
-  return COLORS.map((color) => {
+function makeSprites(colors: readonly string[]): HTMLCanvasElement[] {
+  return colors.map((color) => {
     const c = document.createElement("canvas");
     c.width = c.height = 64;
     const g = c.getContext("2d")!;
@@ -38,7 +37,8 @@ export function initPetals() {
   const canvas = $<HTMLCanvasElement>("#petals");
   const ctx = canvas.getContext("2d");
   if (!ctx) return { start() {} };
-  const sprites = makeSprites();
+  let sprites = makeSprites(getTheme().petals);
+  onThemeChange((t) => (sprites = makeSprites(t.petals)));
   let petals: Petal[] = [];
   let w = 0;
   let h = 0;

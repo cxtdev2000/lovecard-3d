@@ -110,8 +110,8 @@
   position: absolute;
   border-radius: 10px;
   background:
-    linear-gradient(90deg, transparent 43%, #f1d08e 43%, #d8b168 57%, transparent 57%),
-    linear-gradient(160deg, #c65d74, #8f3348);
+    linear-gradient(90deg, transparent 43%, var(--gold-light) 43%, var(--gold-ribbon) 57%, transparent 57%),
+    linear-gradient(160deg, var(--rose-deep), var(--wine-light));
 }
 
 .gb-box {
@@ -141,7 +141,7 @@
   left: 50%;
   width: 30px;
   height: 26px;
-  border: 6px solid #e8c47c;
+  border: 6px solid var(--gold-light);
   border-radius: 50% 50% 0 50%;
 }
 
@@ -162,7 +162,7 @@
   inset: -30px;
   z-index: -1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(243, 215, 168, 0.9), transparent 65%);
+  background: radial-gradient(circle, rgba(var(--gold-light-rgb), 0.9), transparent 65%);
   opacity: 0;
   transform: scale(0.4);
   transition:
@@ -312,7 +312,7 @@
   width: 100%;
   min-height: 46px;
   padding: 10px 14px;
-  border: 1px solid #ead7cf;
+  border: 1px solid var(--line);
   border-radius: 14px;
   background: #fff;
   font-size: 16px; /* ≥16px stops iOS zooming into the field */
@@ -330,7 +330,7 @@
 .field textarea:focus {
   outline: none;
   border-color: var(--rose);
-  box-shadow: 0 0 0 4px rgba(217, 139, 155, 0.18);
+  box-shadow: 0 0 0 4px rgba(var(--rose-rgb), 0.18);
 }
 
 .choice {
@@ -358,7 +358,7 @@
   place-items: center;
   min-height: 46px;
   padding: 8px 10px;
-  border: 1px solid #ead7cf;
+  border: 1px solid var(--line);
   border-radius: 14px;
   background: #fff;
   font-size: 14px;

@@ -6,17 +6,19 @@
   --rose-deep: #b75a6e;
   --wine: #6e2a3a;
   --gold: #c7a05a;
-  --gold-soft: rgba(199, 160, 90, 0.35);
+  --gold-soft: rgba(var(--gold-rgb), 0.35);
   --ink: #3d2b2f;
   --muted: #86706f;
+  /* Shades, tints and *-rgb channels are derived from this palette at runtime
+     by features/theme.ts (plain values keep Safari 14 support; no color-mix()). */
 
   --f-script: "Dancing Script", "Brush Script MT", cursive;
   --f-serif: "Playfair Display", Georgia, serif;
   --f-sans: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --radius: 22px;
-  --shadow: 0 18px 40px -22px rgba(110, 42, 58, 0.35);
-  --shadow-lg: 0 34px 70px -30px rgba(110, 42, 58, 0.5);
+  --shadow: 0 18px 40px -22px rgba(var(--wine-rgb), 0.35);
+  --shadow-lg: 0 34px 70px -30px rgba(var(--wine-rgb), 0.5);
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -53,8 +55,8 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(60vmax 40vmax at 0% 0%, rgba(217, 139, 155, 0.16), transparent 70%),
-    radial-gradient(50vmax 40vmax at 100% 100%, rgba(199, 160, 90, 0.14), transparent 70%);
+    radial-gradient(60vmax 40vmax at 0% 0%, rgba(var(--rose-rgb), 0.16), transparent 70%),
+    radial-gradient(50vmax 40vmax at 100% 100%, rgba(var(--gold-rgb), 0.14), transparent 70%);
 }
 
 body.locked {
@@ -205,7 +207,7 @@ p {
 .btn-primary {
   background: var(--wine);
   color: #fff;
-  box-shadow: 0 10px 24px -12px rgba(110, 42, 58, 0.7);
+  box-shadow: 0 10px 24px -12px rgba(var(--wine-rgb), 0.7);
 }
 
 .btn-ghost {

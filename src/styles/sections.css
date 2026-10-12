@@ -105,7 +105,7 @@
   inset: auto 0 0;
   display: grid;
   padding: 48px 16px 20px;
-  background: linear-gradient(transparent, rgba(60, 22, 32, 0.72));
+  background: linear-gradient(transparent, rgba(var(--wine-dark-rgb), 0.72));
   color: #fff;
 }
 
@@ -132,7 +132,7 @@
   gap: 14px;
   padding: 28px;
   background:
-    radial-gradient(circle at 50% 0%, rgba(217, 139, 155, 0.18), transparent 60%),
+    radial-gradient(circle at 50% 0%, rgba(var(--rose-rgb), 0.18), transparent 60%),
     var(--paper);
   border: 1px solid var(--gold-soft);
   color: var(--ink);
@@ -393,14 +393,14 @@
 .footer {
   padding: clamp(64px, 10vw, 110px) 20px calc(96px + env(safe-area-inset-bottom));
   text-align: center;
-  color: #fbeee6;
-  background: radial-gradient(120% 100% at 50% 0%, #8c3a4d, var(--wine) 60%, #4c1b27);
+  color: var(--paper);
+  background: radial-gradient(120% 100% at 50% 0%, var(--wine-light), var(--wine) 60%, var(--wine-dark));
 }
 
 .footer .script {
   font-size: clamp(48px, 10vw, 80px);
   line-height: 1.1;
-  color: #f3d7a8;
+  color: var(--gold-light);
 }
 
 .footer-names {

@@ -8,6 +8,7 @@ import { initGift } from "./features/gift";
 import { initMusic } from "./features/music";
 import { initPetals } from "./features/petals";
 import { initRsvp } from "./features/rsvp";
+import { bootTheme, initThemePicker } from "./features/theme";
 import { $ } from "./lib/dom";
 import { applyTierClass } from "./lib/perf";
 import { initReveal } from "./lib/reveal";
@@ -15,6 +16,7 @@ import { initTilt } from "./lib/tilt";
 import { render } from "./render";
 
 applyTierClass();
+bootTheme();
 render($("#app"));
 
 const music = initMusic();
@@ -31,3 +33,4 @@ initRsvp();
 initCalendar();
 initReveal();
 initTilt();
+initThemePicker();

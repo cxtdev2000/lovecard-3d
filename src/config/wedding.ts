@@ -3,6 +3,8 @@
  * no other file holds couple-specific content.
  */
 
+import type { ThemeId } from "./themes.ts";
+
 export type Person = {
   name: string;
   fullName: string;
@@ -35,6 +37,10 @@ export const wedding = {
   lunarDate: "Tức ngày 12 tháng 11 năm Bính Ngọ",
   heroPhoto: "/photos/couple-15",
   quote: "Yêu nhau không phải là nhìn nhau, mà là cùng nhau nhìn về một hướng.",
+  /** Default colour theme (see `config/themes.ts`); a guest link can override it with `?theme=<id>`. */
+  theme: "hong-kem" satisfies ThemeId as ThemeId,
+  /** Show the floating palette button so guests can switch themes themselves. */
+  themePicker: true,
   music: "https://cdn.jsdelivr.net/gh/saygoodbyethe3-bit/music-hosting/Beautiful in White - Westlife.mp3",
 
   groom: {
