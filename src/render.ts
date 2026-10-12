@@ -1,8 +1,8 @@
 import { themes } from "./config/themes";
 import { wedding as w, type Person, type WeddingEvent } from "./config/wedding";
 import { dateParts, esc, photo } from "./lib/dom";
+import { heart, rings, sparkle, sprig } from "./lib/ornaments";
 
-const heart = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.5 2.3 4.5 6 4.5c2.2 0 3.6 1.3 4 2.2.4-.9 1.8-2.2 4-2.2 3.7 0 5.6 4 4 7.2C19.5 16.4 12 21 12 21z"/></svg>`;
 
 const icon = {
   map: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zm0-9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>`,
@@ -14,6 +14,14 @@ const icon = {
   palette: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4A5.6 5.6 0 0 0 23 9.8C23 5.5 18.1 2 12 2zM6.5 13a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3-4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm3 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>`,
   close: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12l5.6 5.6-1.4 1.4-5.6-5.6L6.4 19 5 17.6 10.6 12 5 6.4z"/></svg>`,
 };
+
+/** Twinkling sparkles at [x%, y%, size px, delay s] positions inside the parent box. */
+const twinkles = (spots: [number, number, number, number][]) => `
+  <span class="twinkles" aria-hidden="true">${spots
+    .map(([x, y, s, t]) => `<i style="--x:${x}%;--y:${y}%;--s:${s}px;--t:${t}s">${sparkle}</i>`)
+    .join("")}</span>`;
+
+const ornament = (cls: string) => `<span class="orn ${cls}" data-draw aria-hidden="true">${sprig}</span>`;
 
 const secHead = (eyebrow: string, title: string) => `
   <header class="sec-head" data-reveal>
@@ -28,6 +36,7 @@ function intro() {
   return `
   <div class="intro" id="intro">
     <div class="intro-glow" aria-hidden="true"></div>
+    ${ornament("orn-tl")}${ornament("orn-br")}
     <div class="intro-inner">
       <p class="intro-guest">Trân trọng kính mời<strong id="guest-name">Quý khách</strong></p>
       <button class="envelope" id="envelope" type="button" aria-label="Mở thiệp cưới">
@@ -52,6 +61,7 @@ function hero() {
   return `
   <section class="hero" id="top">
     <div class="hero-orbit" aria-hidden="true"><i></i><i></i></div>
+    ${ornament("orn-tr")}${ornament("orn-bl")}
     <div class="hero-grid">
       <div class="hero-text">
         <p class="eyebrow">Chúng mình sắp cưới</p>
@@ -70,6 +80,7 @@ function hero() {
           <div class="layer layer-img">${photo(w.heroPhoto, `${w.groom.name} và ${w.bride.name}`, { eager: true, sizes: "(max-width: 900px) 78vw, 420px" })}</div>
           <span class="layer layer-badge" aria-hidden="true">${heart}</span>
         </div></div>
+        ${twinkles([[-6, 12, 16, 0], [104, 22, 12, 1.1], [96, 70, 18, 0.5], [-10, 64, 11, 1.7], [50, -6, 13, 2.2], [8, 98, 14, 0.9]])}
       </div>
     </div>
     <p class="hero-quote" data-reveal>“${esc(w.quote)}”</p>
@@ -258,6 +269,7 @@ function rsvp() {
 function footer() {
   return `
   <footer class="footer">
+    <span class="footer-rings" data-draw data-reveal>${rings}</span>
     <p class="script">Thank you</p>
     <p class="footer-names">${esc(w.groom.name)} &amp; ${esc(w.bride.name)}</p>
     <p class="footer-note">Rất hân hạnh được đón tiếp!</p>
@@ -283,6 +295,7 @@ function themePicker() {
 
 function overlays() {
   return `
+  <div class="bokeh" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <canvas class="petals" id="petals" aria-hidden="true"></canvas>
   <button class="music-btn" id="music-btn" type="button" aria-label="Bật/tắt nhạc" aria-pressed="false" hidden>${icon.music}</button>
   <audio id="music" src="${encodeURI(w.music)}" preload="none" loop></audio>

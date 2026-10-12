@@ -1,0 +1,240 @@
+/*
+ * Decorative layer: gold line-art ornaments that draw themselves, twinkles, light sheen,
+ * handwriting reveal, bokeh and the envelope burst. Colours come from theme tokens only.
+ * Tier fallbacks live in performance-tiers.css.
+ */
+
+/* ---------- Line-art draw-on ---------- */
+
+/* Paths start hidden (dash offset = own length, set by lib/ornaments.ts) and draw one by one.
+   Without the measured --len the dasharray is invalid and the art simply shows fully drawn. */
+[data-draw] path {
+  fill: none; /* beats the global svg fill so line art stays outline-only */
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+}
+
+.intro [data-draw] path,
+.card.shown .hero [data-draw] path,
+[data-draw].in path {
+  animation: draw 1.8s var(--ease-out) calc(var(--k, 0) * 90ms + var(--draw-delay, 0s)) forwards;
+}
+
+.orn {
+  position: absolute;
+  width: clamp(92px, 19vw, 190px);
+  aspect-ratio: 1;
+  color: var(--gold);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.orn svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* The sprig grows from its bottom-left corner; flips point it out of each page corner. */
+.orn-bl {
+  left: 6px;
+  bottom: 6px;
+}
+.orn-tr {
+  right: 6px;
+  top: 6px;
+  transform: rotate(180deg);
+}
+.orn-tl {
+  left: 6px;
+  top: calc(6px + env(safe-area-inset-top));
+  transform: scaleY(-1);
+}
+.orn-br {
+  right: 6px;
+  bottom: calc(6px + env(safe-area-inset-bottom));
+  transform: scaleX(-1);
+}
+
+.card.shown .hero .orn {
+  --draw-delay: 0.6s;
+}
+
+/* Keep hero content above the corner art. */
+.hero-grid {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Twinkles around the hero photo ---------- */
+
+.hero-stage {
+  position: relative;
+}
+
+.twinkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.twinkles i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  color: var(--gold);
+  opacity: 0;
+  animation: twinkle 3.4s ease-in-out var(--t) infinite;
+}
+
+.twinkles svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 4px rgba(var(--gold-light-rgb), 0.9));
+}
+
+/* ---------- Light sheen sweeping across the hero photo ---------- */
+
+.layer-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.32) 50%, transparent 62%);
+  transform: translate3d(-120%, 0, 0);
+  pointer-events: none;
+}
+
+.card.shown .layer-img::after {
+  animation: sheen 7s ease-in-out 2.4s infinite;
+}
+
+/* ---------- Names written in, left to right ---------- */
+
+/* Padding gives accents and script swashes room inside the clip box. */
+.names > span {
+  padding: 0.2em 0.14em;
+  margin: -0.2em -0.14em;
+}
+
+.card.shown .names > span {
+  animation: write 1.3s cubic-bezier(0.6, 0.1, 0.3, 1) 0.55s backwards;
+}
+.card.shown .names > .amp {
+  animation-delay: 1.2s;
+}
+.card.shown .names > span:last-child {
+  animation-delay: 1.4s;
+}
+
+/* ---------- Footer rings ---------- */
+
+.footer-rings {
+  display: block;
+  width: clamp(84px, 16vw, 120px);
+  margin: 0 auto 8px;
+  color: var(--gold-light);
+}
+
+.footer-rings svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Drifting bokeh lights behind the card ---------- */
+
+.bokeh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bokeh i {
+  --c: var(--rose-rgb);
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--c), 0.32), rgba(var(--c), 0) 70%);
+  transform: translate3d(-50%, -50%, 0);
+  animation: drift var(--d) ease-in-out infinite alternate;
+}
+
+.bokeh i:nth-child(1) { --x: 8%; --y: 18%; --s: 26vmax; --d: 22s; }
+.bokeh i:nth-child(2) { --x: 72%; --y: 8%; --s: 20vmax; --d: 28s; --c: var(--gold-rgb); }
+.bokeh i:nth-child(3) { --x: 84%; --y: 62%; --s: 30vmax; --d: 26s; }
+.bokeh i:nth-child(4) { --x: 18%; --y: 74%; --s: 18vmax; --d: 24s; --c: var(--gold-rgb); }
+.bokeh i:nth-child(5) { --x: 46%; --y: 42%; --s: 14vmax; --d: 30s; }
+.bokeh i:nth-child(6) { --x: 60%; --y: 92%; --s: 22vmax; --d: 20s; --c: var(--gold-rgb); }
+
+/* ---------- Envelope burst particles (features/sparkle-burst.ts) ---------- */
+
+.burst {
+  position: fixed;
+  z-index: 52;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0);
+}
+
+.burst svg {
+  width: 100%;
+  height: 100%;
+}
+
+.burst-heart {
+  color: var(--rose-deep);
+}
+
+.burst-spark {
+  width: 14px;
+  height: 14px;
+  color: var(--gold);
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.2) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(90deg);
+  }
+}
+@keyframes sheen {
+  0% {
+    transform: translate3d(-120%, 0, 0);
+  }
+  22%,
+  100% {
+    transform: translate3d(120%, 0, 0);
+  }
+}
+@keyframes write {
+  from {
+    -webkit-clip-path: inset(0 100% 0 0);
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    -webkit-clip-path: inset(0 0 0 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes drift {
+  to {
+    transform: translate3d(calc(-50% + 5vmax), calc(-50% - 7vmax), 0) scale(1.15);
+  }
+}

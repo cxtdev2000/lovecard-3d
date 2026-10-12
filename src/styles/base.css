@@ -155,10 +155,27 @@ p {
   width: 56px;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold));
+  transform-origin: 100% 50%;
+  transition: transform 1.1s var(--ease-out) 0.35s;
 }
 
 .divider::after {
-  transform: scaleX(-1);
+  background: linear-gradient(270deg, transparent, var(--gold));
+  transform-origin: 0 50%;
+}
+
+.divider svg {
+  transition: transform 0.6s var(--ease-spring) 0.2s;
+}
+
+/* When the heading reveals, the heart pops and the rules grow out from it. */
+[data-reveal]:not(.in) .divider::before,
+[data-reveal]:not(.in) .divider::after {
+  transform: scaleX(0);
+}
+
+[data-reveal]:not(.in) .divider svg {
+  transform: scale(0);
 }
 
 .lead {

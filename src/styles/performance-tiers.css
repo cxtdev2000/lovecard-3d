@@ -5,7 +5,9 @@
  */
 
 .lite .hero-orbit,
-.lite .intro-glow {
+.lite .intro-glow,
+.lite .bokeh,
+.lite .layer-img::after {
   display: none;
 }
 
@@ -16,6 +18,10 @@
 .lite .layer-badge svg,
 .lite .couple-heart {
   animation: none;
+}
+
+.lite .twinkles svg {
+  filter: none;
 }
 
 /* Fewer, smaller shadows = cheaper rasterisation on low-end GPUs. */
@@ -36,6 +42,21 @@
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
   transition-delay: 0s !important;
+}
+
+.reduced .bokeh,
+.reduced .twinkles,
+.reduced .timeline::after,
+.reduced .layer-img::after {
+  display: none;
+}
+
+.reduced [data-draw] path {
+  stroke-dasharray: none;
+}
+
+.reduced .names > span {
+  animation: none;
 }
 
 .reduced [data-reveal] {

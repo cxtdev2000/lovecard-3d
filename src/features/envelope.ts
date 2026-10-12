@@ -1,5 +1,6 @@
 import { $ } from "../lib/dom";
 import { getTier } from "../lib/perf";
+import { sparkleBurst } from "./sparkle-burst";
 
 /** Fills the guest name from `?to=` (e.g. ?to=Anh%20Minh) so each link can be personalised. */
 function personalise() {
@@ -25,6 +26,7 @@ export function initEnvelope(onOpen: () => void) {
     if (opened) return;
     opened = true;
     onOpen();
+    sparkleBurst($(".env-seal", envelope));
     intro.classList.add("opening");
     window.setTimeout(
       () => {

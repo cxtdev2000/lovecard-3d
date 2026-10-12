@@ -5,6 +5,8 @@ import { $$ } from "./dom";
  * and every shape is a <path> so `[data-draw]` can animate it being drawn (see measureDrawPaths).
  */
 
+export const heart = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.5 2.3 4.5 6 4.5c2.2 0 3.6 1.3 4 2.2.4-.9 1.8-2.2 4-2.2 3.7 0 5.6 4 4 7.2C19.5 16.4 12 21 12 21z"/></svg>`;
+
 const petal = (k: number) => `<path d="M132 30q-9-13 0-21q9 8 0 21z" transform="rotate(${k * 72} 132 30)"/>`;
 
 /** Flowering branch growing from the bottom-left corner of its box towards the top-right. */
