@@ -13,25 +13,106 @@
   opacity: 1;
 }
 
+/* Music button as a vinyl record: it spins while playing and the tone arm swings onto it. */
 .music-btn {
   position: fixed;
   right: calc(16px + env(safe-area-inset-right));
   bottom: calc(16px + env(safe-area-inset-bottom));
   z-index: 45;
-  display: grid;
-  place-items: center;
   width: 50px;
   height: 50px;
+  padding: 0;
   border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, var(--rose-deep) 0 18%, var(--wine) 19% 100%);
+  background: #1c1517;
   color: #fff;
-  font-size: 22px;
-  box-shadow: 0 10px 24px -8px rgba(var(--wine-rgb), 0.7);
+  font-size: 13px;
+  box-shadow: 0 10px 24px -8px rgba(var(--shade-rgb), 0.85);
 }
 
 .music-btn[hidden] {
   display: none;
+}
+
+.vinyl {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #1c1517 0 1.5px, #2d2427 2px 3px);
+}
+
+.vinyl-label {
+  display: grid;
+  place-items: center;
+  width: 44%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+  box-shadow: 0 0 0 1px rgba(var(--gold-rgb), 0.7);
+}
+
+.vinyl-label svg {
+  width: 56%;
+  height: 56%;
+}
+
+/* Light catching the grooves; it stays put while the record turns underneath. */
+.music-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 20deg,
+    transparent 0 8%,
+    rgba(255, 255, 255, 0.22) 13%,
+    transparent 19% 50%,
+    rgba(255, 255, 255, 0.14) 63%,
+    transparent 69%
+  );
+  pointer-events: none;
+}
+
+.tonearm {
+  position: absolute;
+  top: -4px;
+  right: -3px;
+  z-index: 2;
+  width: 4px;
+  height: 60%;
+  border-radius: 2px;
+  background: linear-gradient(var(--gold-light), var(--gold));
+  transform-origin: 50% 3px;
+  transform: rotate(-8deg);
+  transition: transform 0.6s var(--ease-out);
+}
+
+.tonearm::before,
+.tonearm::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  border-radius: 50%;
+  background: var(--gold);
+  transform: translateX(-50%);
+}
+
+.tonearm::before {
+  top: -3px;
+  width: 10px;
+  height: 10px;
+  box-shadow: inset 0 0 0 2px var(--gold-light);
+}
+
+.tonearm::after {
+  bottom: -2px;
+  width: 8px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--gold-light);
 }
 
 .music-btn::after {
@@ -43,8 +124,12 @@
   opacity: 0;
 }
 
-.music-btn.playing svg {
-  animation: spin 4s linear infinite;
+.music-btn.playing .vinyl {
+  animation: spin 3.2s linear infinite;
+}
+
+.music-btn.playing .tonearm {
+  transform: rotate(22deg);
 }
 
 .music-btn.playing::after {

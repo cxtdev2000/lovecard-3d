@@ -230,6 +230,44 @@ function countdown() {
   </section>`;
 }
 
+/**
+ * Scrapbook invitation: paper pieces laid on the table one after another as it scrolls in
+ * (polaroid, ribbon-tied date card, die-cut save-the-date tag, pearls), then the letter.
+ * Pieces sit at different depths so the pointer tilt gives a parallax on desktop.
+ */
+function letter() {
+  const time = dateParts(w.date).time;
+  const pearl = (x: number, y: number, s: number) => `<i class="pearl" style="--x:${x}%;--y:${y}%;--s:${s}px"></i>`;
+  return `
+  <section class="section letter" id="letter">
+    ${secHead("Lời mời", "Gửi những người thương")}
+    <div class="scrap" data-tilt="6">
+      <figure class="scrap-polaroid" data-reveal style="--i:0">
+        ${photo(w.letter.photo, `${w.groom.name} và ${w.bride.name}`, { sizes: "(max-width: 640px) 50vw, 300px" })}
+        <figcaption><small>Lời gửi gắm từ</small><span class="script">${esc(w.groom.name)} &amp; ${esc(w.bride.name)}</span></figcaption>
+      </figure>
+      <div class="scrap-date" data-reveal style="--i:1">
+        <span class="scrap-emboss" aria-hidden="true">${sprig}</span>
+        <span class="scrap-ribbon" aria-hidden="true"><i></i></span>
+        <b>${main.day}</b>
+        <span class="script">Tháng ${Number(main.month)}</span>
+        <em>${main.year}</em>
+        <small>Vào lúc ${time}</small>
+      </div>
+      <div class="scrap-tag" data-reveal style="--i:2">
+        <small>Save the date</small>
+        <span class="script">${esc(w.groom.name)}</span>
+        <span class="script">&amp; ${esc(w.bride.name)}</span>
+      </div>
+      <span class="scrap-pearls" data-reveal style="--i:3" aria-hidden="true">${pearl(-3, 6, 22)}${pearl(97, 30, 16)}${pearl(44, 97, 26)}${pearl(55, 92, 12)}${pearl(-5, 88, 14)}</span>
+    </div>
+    <article class="scrap-letter" data-reveal>
+      ${w.letter.paragraphs.map((p) => `<p>${esc(p)}</p>`).join("")}
+      <p class="script scrap-sign">${esc(w.groom.name)} &amp; ${esc(w.bride.name)}</p>
+    </article>
+  </section>`;
+}
+
 function personCard(p: Person, side: "groom" | "bride") {
   const parents = p.parents.length
     ? `<p class="parents">${p.parents.map(esc).join("<br>")}</p>`
@@ -382,9 +420,10 @@ function rsvp() {
       <fieldset class="field choice">
         <legend>Bạn sẽ tham dự chứ?</legend>
         <label><input type="radio" name="attend" value="yes" checked><span>Chắc chắn rồi!</span></label>
+        <label><input type="radio" name="attend" value="maybe"><span>Mình đang cân nhắc</span></label>
         <label><input type="radio" name="attend" value="no"><span>Rất tiếc, mình bận</span></label>
       </fieldset>
-      <label class="field"><span>Số người đi cùng</span>
+      <label class="field" data-guests><span>Số người đi cùng</span>
         <select name="guests">
           <option value="1">Chỉ mình tôi</option><option value="2">2 người</option>
           <option value="3">3 người</option><option value="4">4 người trở lên</option>
@@ -439,7 +478,10 @@ function overlays() {
     <rect width="100%" height="100%" fill="url(#motif)"/>
   </svg>
   <canvas class="petals" id="petals" aria-hidden="true"></canvas>
-  <button class="music-btn" id="music-btn" type="button" aria-label="Bật/tắt nhạc" aria-pressed="false" hidden>${icon.music}</button>
+  <button class="music-btn" id="music-btn" type="button" aria-label="Bật/tắt nhạc" aria-pressed="false" hidden>
+    <span class="vinyl" aria-hidden="true"><span class="vinyl-label">${icon.music}</span></span>
+    <span class="tonearm" aria-hidden="true"></span>
+  </button>
   <audio id="music" src="${encodeURI(w.music)}" preload="none" loop></audio>
   <dialog class="lightbox" id="lightbox" aria-label="Xem ảnh">
     <img id="lb-img" alt="">
@@ -455,7 +497,7 @@ export function render(root: HTMLElement) {
   root.innerHTML = `
     ${intro()}
     <main class="card" id="card" inert>
-      ${hero()}${ribbons()}${countdown()}${couple()}${story()}${events()}${gallery()}${gift()}${rsvp()}${footer()}
+      ${hero()}${ribbons()}${countdown()}${letter()}${couple()}${story()}${events()}${gallery()}${gift()}${rsvp()}${footer()}
     </main>
     ${overlays()}`;
 }

@@ -1,0 +1,333 @@
+/*
+ * Scrapbook invitation (render.ts `letter()`): paper pieces overlap at slight angles like
+ * keepsakes laid on a table. Pieces rest with the individual `rotate` / `translate`
+ * properties, so `transform` stays free for the scroll reveal and the pointer tilt.
+ */
+
+.scrap {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.08fr 1fr;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 10px 4px 24px;
+  transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--ease-out);
+}
+
+/* Each piece drops onto the table from above, one after another. */
+.scrap [data-reveal] {
+  transform: perspective(800px) translate3d(0, -36px, 80px) rotateX(24deg) scale(1.04);
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 1s var(--ease-spring);
+  transition-delay: calc(var(--i, 0) * 180ms);
+}
+
+.scrap [data-reveal].in {
+  transform: none;
+}
+
+/* ---------- Polaroid ---------- */
+
+.scrap-polaroid {
+  position: relative;
+  z-index: 2;
+  grid-area: 1 / 1 / 3 / 2;
+  align-self: center;
+  margin: 0 -14% 0 0;
+  padding: 8px 8px 0;
+  background: #fff;
+  box-shadow: var(--shadow-lg);
+  rotate: -6deg;
+  translate: 0 0 30px;
+}
+
+/* Washi tape holding the photo down. */
+.scrap-polaroid::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 30%;
+  width: 40%;
+  height: 20px;
+  background: rgba(var(--gold-rgb), 0.38);
+  rotate: -4deg;
+}
+
+.scrap-polaroid img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+/* Left-aligned: the save-the-date tag overlaps the right edge of the caption strip. */
+.scrap-polaroid figcaption {
+  display: grid;
+  padding: 8px 22% 12px 4px;
+  text-align: left;
+  line-height: 1.2;
+}
+
+.scrap-polaroid small {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scrap-polaroid .script {
+  font-size: clamp(16px, 4.2vw, 24px);
+  color: var(--wine);
+}
+
+/* ---------- Date card tied with a voile ribbon ---------- */
+
+.scrap-date {
+  position: relative;
+  z-index: 1;
+  grid-area: 1 / 2;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  margin-top: 8%;
+  padding: 44px 12px 26px;
+  overflow: hidden;
+  background: var(--blush);
+  border: 1px solid rgba(var(--gold-rgb), 0.3);
+  box-shadow: var(--shadow);
+  text-align: center;
+  color: var(--wine);
+  line-height: 1.1;
+  rotate: 4deg;
+  translate: 0 0 10px;
+}
+
+/* Flowers pressed into the paper. */
+.scrap-emboss {
+  position: absolute;
+  right: -12%;
+  bottom: -10%;
+  width: 78%;
+  color: rgba(var(--wine-rgb), 0.14);
+  filter: drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.8));
+  pointer-events: none;
+}
+
+.scrap-date b {
+  font-family: var(--f-serif);
+  font-size: clamp(48px, 13vw, 76px);
+  font-weight: 500;
+}
+
+.scrap-date .script {
+  font-size: clamp(20px, 5.4vw, 30px);
+  color: var(--rose-deep);
+}
+
+.scrap-date em {
+  margin-top: 4px;
+  font-family: var(--f-serif);
+  font-size: clamp(24px, 6.4vw, 36px);
+  font-style: normal;
+}
+
+.scrap-date small {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.scrap-ribbon {
+  position: absolute;
+  top: 16px;
+  left: -2px;
+  right: -2px;
+  height: 12px;
+  background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.6) 55%, rgba(255, 255, 255, 0.9));
+  box-shadow: 0 2px 4px -1px rgba(var(--shade-rgb), 0.18);
+}
+
+/* Bow: the knot plus two loops; the tails hang from the ribbon itself. */
+.scrap-ribbon i,
+.scrap-ribbon i::before,
+.scrap-ribbon i::after,
+.scrap-ribbon::before,
+.scrap-ribbon::after {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.scrap-ribbon i {
+  top: -3px;
+  left: 50%;
+  z-index: 1;
+  width: 12px;
+  height: 18px;
+  margin-left: -6px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(var(--shade-rgb), 0.2);
+}
+
+.scrap-ribbon i::before,
+.scrap-ribbon i::after {
+  content: "";
+  top: -4px;
+  z-index: -1;
+  width: 30px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  border: 4px solid rgba(255, 255, 255, 0.95);
+}
+
+.scrap-ribbon i::before {
+  right: 8px;
+  rotate: 18deg;
+}
+
+.scrap-ribbon i::after {
+  left: 8px;
+  rotate: -18deg;
+}
+
+.scrap-ribbon::before,
+.scrap-ribbon::after {
+  content: "";
+  top: 6px;
+  left: 50%;
+  width: 9px;
+  height: 30px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.65));
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+  transform-origin: 50% 0;
+}
+
+.scrap-ribbon::before {
+  margin-left: -8px;
+  rotate: 22deg;
+}
+
+.scrap-ribbon::after {
+  margin-left: -1px;
+  rotate: -22deg;
+}
+
+/* ---------- Die-cut save-the-date tag (scooped corners) ---------- */
+
+.scrap-tag {
+  position: relative;
+  z-index: 3;
+  grid-area: 2 / 2;
+  display: grid;
+  justify-items: center;
+  align-self: start;
+  margin: -14% 4% 0 -10%;
+  padding: 20px 12px 18px;
+  background: var(--wine);
+  color: var(--paper);
+  text-align: center;
+  line-height: 1.15;
+  rotate: -4deg;
+  translate: 0 0 45px;
+  -webkit-mask:
+    radial-gradient(circle 12px at 0 0, #0000 98%, #000) top left / 51% 51% no-repeat,
+    radial-gradient(circle 12px at 100% 0, #0000 98%, #000) top right / 51% 51% no-repeat,
+    radial-gradient(circle 12px at 0 100%, #0000 98%, #000) bottom left / 51% 51% no-repeat,
+    radial-gradient(circle 12px at 100% 100%, #0000 98%, #000) bottom right / 51% 51% no-repeat;
+  mask:
+    radial-gradient(circle 12px at 0 0, #0000 98%, #000) top left / 51% 51% no-repeat,
+    radial-gradient(circle 12px at 100% 0, #0000 98%, #000) top right / 51% 51% no-repeat,
+    radial-gradient(circle 12px at 0 100%, #0000 98%, #000) bottom left / 51% 51% no-repeat,
+    radial-gradient(circle 12px at 100% 100%, #0000 98%, #000) bottom right / 51% 51% no-repeat;
+}
+
+.scrap-tag::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px dashed rgba(var(--gold-light-rgb), 0.7);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.scrap-tag small {
+  margin-bottom: 4px;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.scrap-tag .script {
+  font-size: clamp(21px, 5.6vw, 30px);
+}
+
+/* ---------- Pearls scattered on top ---------- */
+
+.scrap-pearls {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  translate: 0 0 60px;
+  pointer-events: none;
+}
+
+.pearl {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #fff 0 12%, #f3ece8 32%, #d9cdc7 70%, #b6a8a1);
+  box-shadow: 0 4px 6px -2px rgba(var(--shade-rgb), 0.35);
+}
+
+/* ---------- Hand-written letter ---------- */
+
+.scrap-letter {
+  max-width: 600px;
+  margin: 32px auto 0;
+  padding: clamp(24px, 5vw, 40px) clamp(20px, 5vw, 40px);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  text-align: center;
+  font-family: var(--f-serif);
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--ink);
+}
+
+.scrap-letter p + p {
+  margin-top: 12px;
+}
+
+.scrap-letter .scrap-sign {
+  margin-top: 18px;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--rose-deep);
+}
+
+/* Desktop: collage on the left, letter beside it. */
+@media (min-width: 960px) {
+  .letter {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    column-gap: 56px;
+    align-items: center;
+  }
+  .letter > .sec-head {
+    grid-column: 1 / -1;
+  }
+  .scrap {
+    width: 100%;
+  }
+  .scrap-letter {
+    margin: 0;
+  }
+}

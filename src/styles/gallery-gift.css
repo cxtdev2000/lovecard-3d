@@ -333,9 +333,13 @@
   box-shadow: 0 0 0 4px rgba(var(--rose-rgb), 0.18);
 }
 
+.field[hidden] {
+  display: none;
+}
+
 .choice {
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
 .choice legend {

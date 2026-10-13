@@ -34,7 +34,7 @@ export const wedding = {
   description: "Trân trọng kính mời bạn đến chung vui trong ngày trọng đại của chúng mình.",
   initials: "T & A",
   /** Main moment used by the countdown and the hero date. */
-  date: "2027-01-17T12:00:00+07:00",
+  date: "2027-01-17T11:00:00+07:00",
   lunarDate: "Tức ngày 10 tháng 12 năm Bính Ngọ",
   heroPhoto: "/photos/couple-15",
   quote: "Yêu nhau không phải là nhìn nhau, mà là cùng nhau nhìn về một hướng.",
@@ -68,27 +68,37 @@ export const wedding = {
   events: [
     {
       title: "Lễ Vu Quy",
-      start: "2027-01-17T08:00:00+07:00",
+      start: "2027-01-17T07:00:00+07:00",
       durationMin: 120,
       place: "Tư gia nhà gái",
       address: "Hải Phòng",
     },
     {
       title: "Lễ Thành Hôn",
-      start: "2027-01-17T10:00:00+07:00",
+      start: "2027-01-17T09:00:00+07:00",
       durationMin: 120,
       place: "Tư gia nhà trai",
       address: "Hải Phòng",
     },
     {
       title: "Tiệc Cưới",
-      start: "2027-01-17T12:00:00+07:00",
+      start: "2027-01-17T11:00:00+07:00",
       durationMin: 180,
       place: "The Pandora Center Hải Phòng",
       address: "12 Võ Nguyên Giáp, Kênh Dương, Lê Chân, Hải Phòng",
       mapUrl: "https://www.google.com/maps/search/?api=1&query=The+Pandora+Center,+12+V%C3%B5+Nguy%C3%AAn+Gi%C3%A1p,+K%C3%AAnh+D%C6%B0%C6%A1ng,+L%C3%AA+Ch%C3%A2n,+H%E1%BA%A3i+Ph%C3%B2ng",
     },
   ] satisfies WeddingEvent[],
+
+  /** Scrapbook invitation under the countdown: a polaroid, the date card and a hand-written letter. */
+  letter: {
+    photo: "/photos/couple-02",
+    paragraphs: [
+      "Chúng mình rất vui và háo hức khi sắp được chia sẻ ngày hạnh phúc nhất của cuộc đời với những người thân yêu, bạn bè và đồng nghiệp.",
+      "Vì thời gian có hạn nên chúng mình chưa thể đến mời trực tiếp từng người. Mong tấm thiệp nhỏ này thay lời mời chân thành nhất gửi đến bạn — người đã luôn đồng hành cùng chúng mình.",
+      "Sự hiện diện của bạn là món quà quý giá và lời chúc phúc tuyệt vời nhất. Hẹn gặp bạn trong ngày đặc biệt ấy nhé!",
+    ],
+  },
 
   story: [
     {

@@ -71,6 +71,15 @@
   text-align: center;
 }
 
+/* Slightly askew, like two photos pinned side by side. */
+.flip-card.groom {
+  rotate: -2.5deg;
+}
+
+.flip-card.bride {
+  rotate: 2.5deg;
+}
+
 .flip-inner {
   position: relative;
   display: block;
