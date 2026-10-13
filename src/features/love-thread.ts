@@ -18,6 +18,10 @@ type Stop = { el: HTMLElement; anchor: HTMLElement; y: number; lit: boolean };
  * `thread` event (detail: lit or not) when the tip crosses it, plus a little burst on the way down.
  * The attribute's value, if any, picks the child to measure (e.g. the timeline heart).
  * On reaching the footer it turns gold and weaves the two wedding rings by itself, then the stone sparkles.
+ *
+ * Scrolling must stay cheap on 120Hz phones, where the page scrolls on the compositor but rAF runs
+ * at 60Hz: the thread is painted once and revealed by two counter-translated wrappers (a composited
+ * clip, no repaint), and the tip is fixed at the reading line so it doesn't judder against the page.
  */
 export function initLoveThread() {
   const card = $("#card");
@@ -43,12 +47,25 @@ export function initLoveThread() {
   tip.className = "thread-tip";
   tip.setAttribute("aria-hidden", "true");
   tip.innerHTML = heart;
-  card.prepend(svg, tip);
+  // Only the rings are drawn with a dash, so a repaint stays small.
+  const ringSvg = document.createElementNS(NS, "svg");
+  ringSvg.classList.add("thread", "thread-rings");
+  ringSvg.setAttribute("aria-hidden", "true");
+  ringSvg.innerHTML = "<path/>";
+  const ringPath = $<SVGPathElement>("path", ringSvg);
+  const clip = document.createElement("div");
+  clip.className = "thread-clip";
+  const inner = document.createElement("div");
+  inner.append(svg);
+  clip.append(inner);
+  card.prepend(clip, ringSvg);
+  document.body.append(tip);
   footer.classList.add("threaded"); // hides the static rings; the thread draws them
 
   const animated = getTier() !== "reduced";
-  let len = 0;
   let scrollLen = 0; // length of the scroll-driven part, up to the footer
+  let ringLen = 0;
+  let height = 0;
   let ys: number[] = []; // y of the point at each length sample; non-decreasing down that part
   let footerTop = 0;
   let raf = 0;
@@ -122,8 +139,9 @@ export function initLoveThread() {
     path.setAttribute("d", d);
     scrollLen = path.getTotalLength();
     ys = Array.from({ length: SAMPLES + 1 }, (_, i) => path.getPointAtLength((scrollLen * i) / SAMPLES).y);
-    path.setAttribute("d", d + ringsPath());
-    len = path.getTotalLength();
+    ringPath.setAttribute("d", `M${mid} ${footerTop}${ringsPath()}`);
+    ringLen = ringPath.getTotalLength();
+    height = card.clientHeight;
 
     stops = $$("[data-thread-stop]", card).map((el) => {
       const anchor = el.dataset.threadStop ? $(el.dataset.threadStop, el) : el;
@@ -134,20 +152,35 @@ export function initLoveThread() {
     ink.setAttribute("y1", String(footerTop - 80));
     ink.setAttribute("y2", String(footerTop + 40));
     beads.innerHTML =
-      `<rect width="${w}" height="${card.clientHeight}" fill="#fff"/>` +
+      `<rect width="${w}" height="${height}" fill="#fff"/>` +
       dots.map((b) => `<circle cx="${b.x}" cy="${b.y}" r="${b.r}" fill="#000"/>`).join("");
     if (animated) {
-      path.style.strokeDasharray = `${len}`;
-      if (tie === "tied") paint(len);
+      ringPath.style.strokeDasharray = `${ringLen}`;
+      if (tie === "tied") paintRings(1);
+      else ringPath.style.strokeDashoffset = `${ringLen}`;
     }
   };
 
-  const paint = (drawn: number) => {
-    path.style.strokeDashoffset = `${len - drawn}`;
-    const p = path.getPointAtLength(drawn);
-    tip.style.transform = `translate3d(${p.x}px, ${p.y}px, 0)`;
-    tip.classList.toggle("on", drawn > 0 && drawn < len);
+  /** Shows the thread above card-y `y`: the outer box slides up, the inner one back down. */
+  const reveal = (y: number) => {
+    const hide = Math.max(0, height - y);
+    clip.style.transform = `translate3d(0, ${-hide}px, 0)`;
+    inner.style.transform = `translate3d(0, ${hide}px, 0)`;
+  };
+
+  /** Places the fixed tip at card point `p`; `on` hides it before the start and once tied. */
+  const moveTip = (p: DOMPoint, on: boolean, box: DOMRect) => {
+    tip.style.transform = `translate3d(${box.left + p.x}px, ${box.top + p.y}px, 0)`;
+    tip.classList.toggle("on", on);
     tip.classList.toggle("gilded", p.y > footerTop);
+  };
+
+  /** Scroll phase: thread drawn `drawn` px down the scroll-driven part. */
+  const paint = (drawn: number) => {
+    const box = card.getBoundingClientRect(); // read before the writes below, so no forced style pass
+    const p = path.getPointAtLength(drawn);
+    reveal(drawn > 0 ? p.y : 0);
+    moveTip(p, drawn > 0, box);
     for (const s of stops) {
       const lit = p.y >= s.y;
       if (lit === s.lit) continue;
@@ -159,15 +192,25 @@ export function initLoveThread() {
     }
   };
 
+  /** Finale: fraction `k` of the rings woven. */
+  const paintRings = (k: number) => {
+    const box = card.getBoundingClientRect();
+    const drawn = ringLen * k;
+    ringPath.style.strokeDashoffset = `${ringLen - drawn}`;
+    reveal(footerTop);
+    moveTip(ringPath.getPointAtLength(drawn), k < 1, box);
+  };
+
   /** Finale: once the thread reaches the footer it weaves the rings on its own, then they sparkle. */
   const startTie = () => {
     if (tie !== "idle") return;
+    paint(scrollLen); // a fast fling may skip the end of the scroll part; light what it passed
     tie = "tying";
     const t0 = performance.now();
     const step = (now: number) => {
       const k = Math.min(1, (now - t0) / TIE_MS);
       const e = k < 0.5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2; // ease-in-out
-      paint(scrollLen + (len - scrollLen) * e);
+      paintRings(e);
       if (k < 1) tieRaf = requestAnimationFrame(step);
       else {
         tie = "tied";
@@ -181,11 +224,12 @@ export function initLoveThread() {
     cancelAnimationFrame(tieRaf);
     tie = "idle";
     footer.classList.remove("tied");
+    ringPath.style.strokeDashoffset = `${ringLen}`;
   };
 
   const update = () => {
     raf = 0;
-    if (!len) return; // a scroll can land before the first build
+    if (!scrollLen) return; // a scroll can land before the first build
     const target = innerHeight * 0.62 - card.getBoundingClientRect().top;
     const i = ys.findIndex((y) => y >= target);
     if (i < 0) return startTie(); // past the footer top

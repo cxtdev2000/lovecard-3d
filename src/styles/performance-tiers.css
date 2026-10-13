@@ -37,6 +37,14 @@
   box-shadow: var(--shadow);
 }
 
+/* Out of view (lib/pause-offscreen.ts): hold looping animations; `!important` beats every shorthand. */
+.offscreen,
+.offscreen *,
+.offscreen *::before,
+.offscreen *::after {
+  animation-play-state: paused !important;
+}
+
 .reduced {
   scroll-behavior: auto;
 }

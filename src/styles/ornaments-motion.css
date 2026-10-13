@@ -328,6 +328,20 @@
 /* Above the sections: they are stacking contexts (content-visibility) with their own backdrops, so a
    thread underneath would vanish behind the story lace and the gallery film. It only runs along the
    edges and through the gaps between sections, so it never crosses content. */
+/* Reveal window for the scroll-driven thread (love-thread.ts `reveal`): both boxes only translate. */
+.thread-clip,
+.thread-clip > div {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.thread-clip {
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .thread {
   position: absolute;
   inset: 0;
@@ -357,11 +371,16 @@
   stop-opacity: 1;
 }
 
+.thread-rings path {
+  stroke: var(--gold-light);
+}
+
+/* Fixed at the reading line, so it holds still while the page scrolls between frames. */
 .thread-tip {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 30;
   width: 16px;
   height: 16px;
   margin: -8px 0 0 -8px;

@@ -32,7 +32,8 @@ export function initFoldCard() {
   let fitAll = 1; // scale for the whole open sheet
   let wide = false;
   let travel = 1; // scroll distance while pinned
-  let shown = 0; // progress currently drawn
+  let shown = 0; // progress currently eased to
+  let drawn = -1; // progress last written to the DOM
   let last = 0;
   let raf = 0;
 
@@ -89,7 +90,8 @@ export function initFoldCard() {
     const goal = target();
     shown += (goal - shown) * (1 - Math.exp(-dt / FOLLOW_S));
     if (Math.abs(goal - shown) < 0.0005) shown = goal;
-    draw(shown);
+    // Past the hero, every scroll lands here with nothing to change: skip the style writes.
+    if (shown !== drawn) draw((drawn = shown));
     raf = shown === goal ? 0 : requestAnimationFrame(frame);
     if (!raf) last = 0;
   };
@@ -101,7 +103,7 @@ export function initFoldCard() {
   const ro = new ResizeObserver(() => {
     measure();
     shown = target();
-    draw(shown);
+    draw((drawn = shown));
   });
   ro.observe(pin);
   ro.observe($(".hero-grid", hero));
